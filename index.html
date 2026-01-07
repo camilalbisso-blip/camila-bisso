@@ -1,36 +1,308 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Camila Bisso | Legal Project Manager & LegalOps</title>
+    <meta name="description" content="Portfolio profesional de Camila Bisso - Especialista en LegalOps y Gestión de Proyectos Legales.">
+    
+    <!-- Tailwind CSS para el diseño -->
     <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Fuentes: Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@100;200;300;400;500;600;700&display=swap" rel="stylesheet">
+
     <style>
+        :root {
+            --primary-purple: #782954;
+            --primary-blue: #295478;
+            --dark-bg: #0a0a0a;
+        }
+
         body {
             font-family: 'Inter', sans-serif;
+            background-color: var(--dark-bg);
+            color: #f5f5f5;
             scroll-behavior: smooth;
+            -webkit-font-smoothing: antialiased;
         }
+
         .selection-purple::selection {
-            background-color: #782954;
+            background-color: var(--primary-purple);
             color: white;
         }
+
+        .glass-nav {
+            background: rgba(10, 10, 10, 0.8);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+        }
+
+        .hero-image-container {
+            position: relative;
+            background: #111;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        .achievement-card {
+            background: #111;
+            padding: 1.5rem;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            border-right: 4px solid transparent;
+        }
+
+        .achievement-card:hover {
+            transform: translateX(8px);
+            background: #161616;
+        }
+
+        .card-purple { border-right-color: var(--primary-purple); }
+        .card-blue { border-right-color: var(--primary-blue); }
+
+        /* Estilo para los botones */
+        .btn-primary {
+            background-color: #fff;
+            color: #000;
+            padding: 1rem 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-weight: 700;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-primary:hover {
+            background-color: #e5e5e5;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px -5px rgba(255, 255, 255, 0.1);
+        }
+
+        .btn-secondary {
+            border: 1px solid rgba(255,255,255,0.1);
+            color: #fff;
+            padding: 1rem 2.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.2em;
+            font-weight: 700;
+            font-size: 0.7rem;
+            transition: all 0.3s ease;
+            display: inline-block;
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.05);
+            border-color: rgba(255,255,255,0.3);
+            transform: translateY(-2px);
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .animate-fade-in {
+            animation: fadeIn 1s ease-out forwards;
+        }
     </style>
-<script type="importmap">
-{
-  "imports": {
-    "react-dom/": "https://esm.sh/react-dom@^19.2.3/",
-    "react/": "https://esm.sh/react@^19.2.3/",
-    "react": "https://esm.sh/react@^19.2.3",
-    "lucide-react": "https://esm.sh/lucide-react@^0.562.0"
-  }
-}
-</script>
 </head>
-<body class="bg-[#0a0a0a] text-gray-100 selection-purple">
-    <div id="root"></div>
+<body class="selection-purple">
+
+    <!-- NAVEGACIÓN -->
+    <nav class="fixed top-0 w-full z-50 border-b border-white/5 glass-nav">
+        <div class="max-w-6xl mx-auto px-8 h-20 flex items-center justify-between">
+            <a href="#" class="text-xl tracking-tighter font-medium uppercase">
+                Camila <span style="color: var(--primary-purple)">Bisso</span>
+            </a>
+            <div class="hidden md:flex space-x-10 text-[11px] uppercase tracking-[0.2em] font-medium text-gray-400">
+                <a href="#quien-soy" class="hover:text-white transition-colors">Quién soy</a>
+                <a href="#servicios" class="hover:text-white transition-colors">Servicios</a>
+                <a href="#experiencia" class="hover:text-white transition-colors">Experiencia</a>
+                <a href="#contacto" class="hover:text-white transition-colors">Contacto</a>
+            </div>
+        </div>
+    </nav>
+
+    <main class="max-w-5xl mx-auto px-8">
+        
+        <!-- SECCIÓN HERO -->
+        <section class="pt-40 pb-24 md:pt-56 md:pb-32 min-h-[90vh] flex items-center">
+            <div class="grid md:grid-cols-2 gap-12 lg:gap-20 items-center w-full">
+                <div class="order-2 md:order-1 animate-fade-in">
+                    <h2 class="text-[10px] md:text-xs uppercase tracking-[0.5em] mb-8 font-semibold" style="color: var(--primary-purple)">
+                        Legal Project Manager & LegalOps
+                    </h2>
+                    <h1 class="text-4xl md:text-6xl font-light tracking-tight leading-[1.1] mb-10 text-white">
+                        Transformo operaciones legales en sistemas claros, eficientes y escalables.
+                    </h1>
+                    <p class="text-xl text-gray-400 font-light max-w-lg mb-12 leading-relaxed">
+                        Diseño procesos, automatizo flujos y construyo métricas para que los equipos legales trabajen mejor, con datos, foco y orden.
+                    </p>
+                    <div class="flex flex-col sm:flex-row gap-5">
+                        <a href="https://w.app/2vdlca" target="_blank" class="btn-primary text-center">Trabajemos juntos</a>
+                        <a href="mailto:camibisso@hotmail.com" class="btn-secondary text-center">Hablemos</a>
+                    </div>
+                </div>
+                
+                <div class="order-1 md:order-2 flex justify-center md:justify-end animate-fade-in" style="animation-delay: 0.2s">
+                    <div class="relative w-full max-w-[320px] md:max-w-[380px] aspect-[3/4] hero-image-container">
+                        <img 
+                            src="https://lh3.googleusercontent.com/d/1yacob0jlAl0eLM6z0yqzG6KrlJPTiF4I" 
+                            alt="Camila Bisso"
+                            class="w-full h-full object-cover block grayscale hover:grayscale-0 transition-all duration-1000 ease-in-out"
+                        >
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN QUIÉN SOY -->
+        <section id="quien-soy" class="py-24 border-t border-white/5">
+            <div class="grid md:grid-cols-3 gap-16">
+                <div class="md:col-span-1">
+                    <h3 class="text-xs uppercase tracking-[0.3em] text-gray-500 sticky top-32">Quién soy</h3>
+                </div>
+                <div class="md:col-span-2 space-y-8">
+                    <p class="text-3xl font-light leading-snug tracking-tight text-white">
+                        Soy Camila Bisso, especializada en optimización y escalabilidad de operaciones legales. Integro Derecho, gestión y tecnología para crear estructuras que realmente funcionen.
+                    </p>
+                    <div class="space-y-6">
+                        <p class="text-lg text-gray-400 leading-relaxed font-light">
+                            Mi historia combina disciplina deportiva, pensamiento estratégico y liderazgo desde el propósito. Crecí en Lanús, entre deporte y comunidad, marcando mi forma de trabajar: con constancia y claridad.
+                        </p>
+                        <p class="text-lg text-gray-400 leading-relaxed font-light">
+                            Mi objetivo: convertir operaciones complejas en sistemas ordenados, sostenibles y medibles.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN SERVICIOS -->
+        <section id="servicios" class="py-24 border-t border-white/5">
+            <div class="grid md:grid-cols-3 gap-16">
+                <div class="md:col-span-1">
+                    <h3 class="text-xs uppercase tracking-[0.3em] text-gray-500 sticky top-32">Servicios</h3>
+                </div>
+                <div class="md:col-span-2">
+                    <p class="text-xl font-light mb-12 text-gray-300">Acompaño estudios y equipos corporativos a:</p>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                        <div class="flex items-center gap-4 text-lg font-light text-gray-400 border-b border-white/5 pb-4 hover:text-white transition-colors cursor-default">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--primary-blue)"></span> ordenar procesos
+                        </div>
+                        <div class="flex items-center gap-4 text-lg font-light text-gray-400 border-b border-white/5 pb-4 hover:text-white transition-colors cursor-default">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--primary-blue)"></span> automatizar tareas
+                        </div>
+                        <div class="flex items-center gap-4 text-lg font-light text-gray-400 border-b border-white/5 pb-4 hover:text-white transition-colors cursor-default">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--primary-blue)"></span> trabajar con métricas
+                        </div>
+                        <div class="flex items-center gap-4 text-lg font-light text-gray-400 border-b border-white/5 pb-4 hover:text-white transition-colors cursor-default">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--primary-blue)"></span> reducir tiempos
+                        </div>
+                        <div class="flex items-center gap-4 text-lg font-light text-gray-400 border-b border-white/5 pb-4 hover:text-white transition-colors cursor-default">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--primary-blue)"></span> escalar sin caos
+                        </div>
+                        <div class="flex items-center gap-4 text-lg font-light text-gray-400 border-b border-white/5 pb-4 hover:text-white transition-colors cursor-default">
+                            <span class="w-1.5 h-1.5 rounded-full" style="background-color: var(--primary-blue)"></span> experiencia del cliente
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN EXPERIENCIA -->
+        <section id="experiencia" class="py-24 border-t border-white/5">
+            <div class="grid md:grid-cols-3 gap-16">
+                <div class="md:col-span-1">
+                    <h3 class="text-xs uppercase tracking-[0.3em] text-gray-500 sticky top-32">Experiencia</h3>
+                </div>
+                <div class="md:col-span-2 space-y-24">
+                    <!-- Consultora -->
+                    <div class="relative pl-8 border-l border-white/5">
+                        <div class="absolute top-0 -left-[5px] w-2 h-2 rounded-full" style="background-color: var(--primary-purple)"></div>
+                        <div class="flex justify-between items-baseline mb-2">
+                            <h4 class="text-2xl font-light text-white">Legal Project Manager & LegalOps</h4>
+                            <span class="text-xs font-mono text-gray-500 uppercase">Actualidad</span>
+                        </div>
+                        <p class="text-gray-500 text-[10px] uppercase tracking-widest mb-6">Consultora Independiente</p>
+                        <p class="text-lg text-gray-400 font-light leading-relaxed mb-6">
+                            Diseño soluciones tecnológicas y operativas para equipos legales. Relevo necesidades, mapeo procesos y desarrollo flujos de trabajo en plataformas low-code con integración de IA.
+                        </p>
+                        
+                        <div class="achievement-card card-purple shadow-lg">
+                            <p class="text-[10px] uppercase tracking-widest text-gray-500 mb-4 font-bold">Logros Relevantes</p>
+                            <ul class="space-y-3 text-gray-400 font-light text-sm">
+                                <li>• Reducción de tiempos operativos en un 40% mediante la optimización y automatización de procesos.</li>
+                                <li>• Estandarización de flujos de producción legal para asegurar calidad y consistencia.</li>
+                                <li>• Implementación de dashboards interactivos con métricas de performance operativa real.</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <!-- Abogados Bisso -->
+                    <div class="relative pl-8 border-l border-white/5">
+                        <div class="absolute top-0 -left-[5px] w-2 h-2 rounded-full" style="background-color: var(--primary-blue)"></div>
+                        <div class="flex justify-between items-baseline mb-2">
+                            <h4 class="text-2xl font-light text-white">Legal Project Management</h4>
+                            <span class="text-xs font-mono text-gray-500 uppercase">2014 – ACTUALIDAD</span>
+                        </div>
+                        <p class="text-gray-500 text-[10px] uppercase tracking-widest mb-6">Abogados Bisso</p>
+                        
+                        <div class="achievement-card card-blue shadow-lg">
+                            <p class="text-[10px] uppercase tracking-widest text-gray-500 mb-4 font-bold">Logros Relevantes</p>
+                            <ul class="space-y-3 text-gray-400 font-light text-sm">
+                                <li>• Reducción del 40 % en tiempos operativos mediante optimización de procesos.</li>
+                                <li>• Escalamiento de cartera x300 en cinco años.</li>
+                                <li>• Estandarización de flujos legales para gestión de alto volumen.</li>
+                                <li>• Dashboards e indicadores clave para control y decisiones estratégicas.</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- SECCIÓN CONTACTO -->
+        <section id="contacto" class="py-32 border-t border-white/5">
+            <div class="text-center space-y-16">
+                <h3 class="text-xs uppercase tracking-[0.4em] text-gray-500">Contacto</h3>
+                <div class="max-w-3xl mx-auto">
+                    <p class="text-3xl md:text-5xl font-light tracking-tighter text-white mb-14">Hablemos sobre cómo escalar tu operación legal.</p>
+                    <a href="mailto:camibisso@hotmail.com" class="text-xl md:text-3xl text-gray-400 hover:text-white transition-all font-light underline decoration-white/10 underline-offset-[16px] hover:decoration-white/40 block">
+                        camibisso@hotmail.com
+                    </a>
+                </div>
+                
+                <div class="flex justify-center gap-12 pt-8">
+                    <a href="https://linkedin.com/in/camilabisso-ia" target="_blank" class="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-400 hover:text-white transition-all hover:tracking-[0.3em]">LinkedIn</a>
+                    <a href="https://w.app/2vdlca" target="_blank" class="text-[10px] uppercase tracking-[0.2em] font-medium text-gray-400 hover:text-white transition-all hover:tracking-[0.3em]">WhatsApp</a>
+                </div>
+                
+                <div class="pt-12">
+                    <a href="https://w.app/2vdlca" target="_blank" style="background-color: var(--primary-purple)" class="btn-primary text-white !text-white shadow-2xl">
+                        Agendar reunión
+                    </a>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="py-16 border-t border-white/5">
+        <div class="max-w-5xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-8 text-center md:text-left">
+            <p class="text-[9px] uppercase tracking-[0.5em] text-gray-600 font-medium">
+                Camila Bisso — Propósito, Datos y Tecnología
+            </p>
+            <div class="flex gap-4 opacity-30">
+                <div class="w-1.5 h-1.5 rounded-full" style="background-color: var(--primary-purple)"></div>
+                <div class="w-1.5 h-1.5 rounded-full" style="background-color: var(--primary-blue)"></div>
+            </div>
+        </div>
+    </footer>
+
 </body>
 </html>
