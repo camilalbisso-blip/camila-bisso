@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gestión Logística - Municipio de Lanús</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        :root {
+            --color-lanus: #7D1531;
+            --color-lanus-light: #A52A4A;
+        }
+        body {
+            background-color: #f9fafb;
+            font-family: 'Inter', sans-serif;
+        }
+        .bg-lanus { background-color: var(--color-lanus); }
+        .text-lanus { color: var(--color-lanus); }
+        .border-lanus { border-color: var(--color-lanus); }
+        .hover-lanus:hover { background-color: var(--color-lanus-light); }
+        
+        .tab-active {
+            border-bottom: 3px solid var(--color-lanus);
+            color: var(--color-lanus);
+            font-weight: 800;
+        }
+
+        .modal-overlay {
+            background-color: rgba(0, 0, 0, 0.5);
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 50;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .custom-scrollbar::-webkit-scrollbar {
+            height: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+        
+        input[type=number]::-webkit-inner-spin-button, 
+        input[type=number]::-webkit-outer-spin-button { 
+            -webkit-appearance: none; 
+            margin: 0; 
+        }
+
+        .save-indicator {
+            transition: opacity 0.3s;
+        }
+    </style>
+</head>
+<body>
+
+<div class="min-h-screen flex flex-col">
+    <header class="bg-lanus text-white p-5 shadow-lg">
+        <div class="container mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="bg-white p-2 rounded-lg">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#7D1531" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                </div>
+                <div>
+                    <h1 class="text-2xl font-bold tracking-tight uppercase">Municipio de Lanús</h1>
+                    <div class="flex items-center gap-2">
+                        <p class="text-xs uppercase tracking-widest opacity-90 font-medium">Logística y Suministros</p>
+                        <span id="save-status" class="save-indicator text-[9px] bg-white/20 px-2 py-0.5 rounded opacity-0">Guardado</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="flex flex-wrap items-center gap-3">
+                <div class="flex bg-black/20 rounded-lg p-1 gap-1">
+                    <button onclick="exportarBackupJSON()" class="p-2 hover:bg-white/10 rounded transition-colors" title="Descargar Backup Completo (JSON)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-3m-1 4l-3 3m0 0l-3-3m3 3V4"></path></svg>
+                    </button>
+                    <button onclick="document.getElementById('import-input').click()" class="p-2 hover:bg-white/10 rounded transition-colors" title="Restaurar Backup (JSON)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a2 2 0 002 2h12a2 2 0 002-2v-1m-4-8l-4-4m0 0L8 8m4-4v12"></path></svg>
+                    </button>
+                    <input type="file" id="import-input" class="hidden" accept=".json" onchange="importarBackupJSON(this)">
+                    <button onclick="descargarReporteGlobal()" class="p-2 hover:bg-white/10 rounded transition-colors border-l border-white/10" title="Reporte Global (Todas las categorías)">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 2v-6m10 10V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2z"></path></svg>
+                    </button>
+                </div>
+                <div id="reloj" class="text-[10px] font-mono bg-black/20 px-3 py-2 rounded text-center leading-tight uppercase tracking-tighter min-w-[120px]"></div>
+            </div>
+        </div>
+    </header>
+
+    <main class="container mx-auto p-4 md:p-6 space-y-6">
+        <div class="flex items-center border-b border-gray-200 mb-4 overflow-x-auto custom-scrollbar">
+            <div id="contenedor-tabs" class="flex"></div>
+            <button onclick="abrirModalCategoria()" class="ml-4 p-2 text-gray-400 hover:text-lanus transition-colors" title="Agregar Categoría">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 4v16m8-8H4"></path></svg>
+            </button>
+        </div>
+
+        <div class="grid grid-cols-1 xl:grid-cols-4 gap-6">
+            <div class="xl:col-span-1 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <h3 class="text-lanus font-bold mb-4 text-sm uppercase tracking-tighter">Inventario y Precios</h3>
+                    <div id="contenedor-stock-base" class="space-y-4"></div>
+                    <div class="mt-6 pt-4 border-t border-gray-100">
+                        <button onclick="abrirModalProducto()" class="w-full border border-dashed border-gray-300 text-gray-400 text-[10px] py-2 rounded uppercase font-bold hover:bg-gray-50 transition-all">Nuevo ítem</button>
+                    </div>
+                </div>
+
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-5">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="text-lanus font-bold text-sm uppercase tracking-tighter" id="titulo-form">Registrar Movimiento</h3>
+                        <button onclick="cancelarEdicion()" class="text-[9px] text-gray-400 hover:text-red-500 uppercase font-bold">Limpiar</button>
+                    </div>
+                    <div class="space-y-4">
+                        <div class="grid grid-cols-2 gap-2">
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase">Fecha</label>
+                                <input type="date" id="mov-fecha-manual" class="w-full mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-[11px]">
+                            </div>
+                            <div>
+                                <label class="block text-[10px] font-bold text-gray-400 uppercase">Ámbito</label>
+                                <select id="mov-ambito" class="w-full mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-sm">
+                                    <option value="INTERNO">Interno</option>
+                                    <option value="EXTERNO">Externo</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase">Responsable / Solicitante</label>
+                            <input type="text" id="mov-responsable" placeholder="Persona que retira" class="w-full mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-sm font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase">Evento / Destino</label>
+                            <input type="text" id="mov-evento" placeholder="Destino del material" class="w-full mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-sm font-medium">
+                        </div>
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase">Remito PDF</label>
+                            <input type="file" id="mov-remito-file" accept="application/pdf" class="w-full mt-1 text-[10px] file:mr-2 file:py-1 file:px-2 file:rounded file:border-0 file:text-[10px] file:font-bold file:bg-lanus file:text-white hover:file:bg-lanus-light cursor-pointer">
+                            <div id="remito-existente" class="hidden mt-1 text-[10px] text-green-600 font-bold">✓ Documento PDF guardado</div>
+                        </div>
+
+                        <div class="p-3 bg-lanus/5 rounded-lg border border-lanus/10">
+                            <label class="block text-[10px] font-bold text-lanus uppercase mb-2 tracking-widest">Añadir Artículos</label>
+                            <div class="space-y-2">
+                                <select id="mov-producto" onchange="cargarPrecioSugerido()" class="w-full p-2 bg-white border border-gray-200 rounded text-sm font-medium outline-none"></select>
+                                <div class="grid grid-cols-2 gap-2">
+                                    <div>
+                                        <label class="text-[8px] font-bold text-gray-400 uppercase">Cantidad</label>
+                                        <input type="number" id="mov-cantidad" min="1" placeholder="0" class="w-full p-2 bg-white border border-gray-200 rounded text-sm font-bold outline-none">
+                                    </div>
+                                    <div>
+                                        <label class="text-[8px] font-bold text-gray-400 uppercase">Precio Unit. $</label>
+                                        <input type="number" id="mov-precio" min="0" step="0.01" placeholder="0.00" class="w-full p-2 bg-white border border-gray-200 rounded text-sm font-bold outline-none">
+                                    </div>
+                                </div>
+                                <div class="flex gap-2">
+                                    <select id="mov-tipo" class="flex-1 p-2 bg-white border border-gray-200 rounded text-[10px] font-bold">
+                                        <option value="SALIDA">SALIDA</option>
+                                        <option value="ENTRADA">ENTRADA</option>
+                                    </select>
+                                    <button onclick="agregarAlPedido()" class="bg-lanus text-white px-5 py-2 rounded text-sm hover-lanus font-black">+</button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div id="lista-temporal" class="space-y-2 max-h-40 overflow-y-auto"></div>
+
+                        <div class="flex justify-between items-center border-t border-gray-200 pt-3 mt-2">
+                            <span class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Suma Total</span>
+                            <span class="text-xl font-black text-lanus" id="total-pedido-dinamico">$ 0.00</span>
+                        </div>
+
+                        <div>
+                            <label class="block text-[10px] font-bold text-gray-400 uppercase">Observaciones</label>
+                            <textarea id="mov-obs" rows="2" class="w-full mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-sm resize-none outline-none"></textarea>
+                        </div>
+
+                        <button onclick="confirmarPedidoCompleto()" id="btn-confirmar" disabled class="w-full bg-lanus text-white font-black py-4 rounded-xl hover-lanus transition-all shadow-md text-[10px] tracking-widest uppercase disabled:opacity-20 disabled:cursor-not-allowed">
+                            Confirmar y Guardar
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <div class="xl:col-span-3 space-y-6">
+                <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <div class="p-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
+                        <h3 class="font-black text-gray-400 uppercase text-[10px] tracking-widest tracking-widest">Historial Operativo - <span id="label-categoria-actual" class="text-lanus"></span></h3>
+                        <button onclick="descargarExcelActual()" class="text-[10px] bg-green-700 text-white px-4 py-1.5 rounded-lg shadow-sm hover:bg-green-800 font-bold uppercase flex items-center gap-2">
+                            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8l-6-6zM6 20V4h7v5h5v11H6z"/></svg>
+                            Planilla de Categoría
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-gray-100 text-gray-400 text-[9px] uppercase font-black border-b border-gray-200">
+                                    <th class="p-4 w-24">Fecha</th>
+                                    <th class="p-4">Solicitante / Destino</th>
+                                    <th class="p-4">Artículos</th>
+                                    <th class="p-4 text-center">Total $</th>
+                                    <th class="p-4 text-center">Remito</th>
+                                    <th class="p-4 text-center">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="lista-movimientos" class="text-xs divide-y divide-gray-100"></tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+</div>
+
+<div id="modal-nuevo" class="modal-overlay">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-80">
+        <h3 class="text-lanus font-bold mb-4 text-sm uppercase tracking-tighter border-b pb-2">Nuevo Producto</h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase">Nombre</label>
+                <input type="text" id="nuevo-nombre" class="w-full mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-sm outline-none">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase">Stock Inicial</label>
+                <input type="number" id="nuevo-stock" value="0" class="w-full mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-sm font-bold">
+            </div>
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase">Precio Unitario $</label>
+                <input type="number" id="nuevo-precio" value="0" step="0.01" class="w-full mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-sm font-bold">
+            </div>
+            <div class="flex gap-2 pt-2">
+                <button onclick="cerrarModalProducto()" class="flex-1 text-gray-400 text-[10px] font-bold uppercase py-2">Cerrar</button>
+                <button onclick="guardarNuevoProducto()" class="flex-1 bg-lanus text-white text-[10px] font-bold uppercase py-2 rounded shadow-md">Aceptar</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div id="modal-categoria" class="modal-overlay">
+    <div class="bg-white rounded-xl shadow-2xl p-6 w-80">
+        <h3 class="text-lanus font-bold mb-4 text-sm uppercase tracking-tighter border-b pb-2">Nueva Categoría</h3>
+        <div class="space-y-3">
+            <div>
+                <label class="block text-[10px] font-bold text-gray-400 uppercase">Nombre</label>
+                <input type="text" id="nueva-cat-nombre" placeholder="Ej: Audio" class="w-full mt-1 p-2 bg-gray-50 border border-gray-200 rounded text-sm outline-none">
+            </div>
+            <div class="flex gap-2 pt-4">
+                <button onclick="cerrarModalCategoria()" class="flex-1 text-gray-400 text-[10px] font-bold uppercase py-2">Cerrar</button>
+                <button onclick="guardarNuevaCategoria()" class="flex-1 bg-lanus text-white text-[10px] font-bold uppercase py-2 rounded shadow-md">Crear</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const STORAGE_KEY = 'lanus_logistica_v2_data';
+    let vistaActual = 'banos';
+    let pedidoTemporal = [];
+    let editandoId = null; 
+    let remitoDataTemp = null;
+    
+    let datos = {
+        banos: { label: "Baños Químicos", inventario: { "Baño Químico Estándar": { cant: 100, precio: 5000 }, "Baño Químico Discapacitados": { cant: 10, precio: 7500 } }, movimientos: [] },
+        limpieza: { label: "Limpieza", inventario: { "Papel Higiénico": { cant: 50, precio: 120 }, "Desodorante Piso": { cant: 10, precio: 850 } }, movimientos: [] },
+        libreria: { label: "Librería", inventario: { "Resma A4": { cant: 20, precio: 4500 }, "Cajas Lapiceras": { cant: 5, precio: 1200 } }, movimientos: [] },
+        sonido: { label: "Sonido", inventario: { "Bafle Potenciado": { cant: 4, precio: 15000 }, "Micrófono Inalámbrico": { cant: 6, precio: 8000 } }, movimientos: [] }
+    };
+
+    function guardar() {
+        try {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify(datos));
+            const status = document.getElementById('save-status');
+            status.style.opacity = '1';
+            setTimeout(() => { status.style.opacity = '0'; }, 1000);
+        } catch (e) {
+            console.error("Error al guardar: ", e);
+            if(e.name === 'QuotaExceededError') {
+                alert("El almacenamiento está lleno. Realice un Backup y limpie el historial.");
+            }
+        }
+    }
+
+    function cargar() {
+        const guardado = localStorage.getItem(STORAGE_KEY);
+        if (guardado) {
+            try { datos = JSON.parse(guardado); } catch (e) { console.error("Error al cargar datos", e); }
+        }
+    }
+
+    function exportarBackupJSON() {
+        const blob = new Blob([JSON.stringify(datos, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `Backup_Logistica_Lanus_${new Date().toISOString().slice(0,10)}.json`;
+        a.click();
+    }
+
+    function importarBackupJSON(input) {
+        const file = input.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            try {
+                const importados = JSON.parse(e.target.result);
+                if (confirm("Se reemplazarán todos los datos actuales. ¿Continuar?")) {
+                    datos = importados;
+                    guardar();
+                    location.reload();
+                }
+            } catch (err) { alert("Error: Archivo no válido."); }
+        };
+        reader.readAsText(file);
+    }
+
+    function descargarReporteGlobal() {
+        let csv = "\uFEFFCategoría;Fecha;Responsable;Evento;Ámbito;Artículos;Total $\n";
+        Object.keys(datos).forEach(catKey => {
+            const cat = datos[catKey];
+            cat.movimientos.forEach(m => {
+                const arts = m.items.map(i => `${i.cantidad} ${i.producto} ($${i.precio})`).join(" | ");
+                csv += `"${cat.label}";"${m.fechaMov}";"${m.responsable}";"${m.evento}";"${m.ambito}";"${arts}";${m.totalGeneral.toFixed(2)}\n`;
+            });
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Reporte_Global_Lanus_${new Date().toISOString().slice(0,10)}.csv`;
+        link.click();
+    }
+
+    function inicializarTabs() {
+        const contenedor = document.getElementById('contenedor-tabs');
+        contenedor.innerHTML = '';
+        Object.keys(datos).forEach(key => {
+            contenedor.innerHTML += `
+                <button onclick="cambiarVista('${key}')" id="tab-${key}" 
+                    class="px-6 py-2 text-xs uppercase tracking-widest whitespace-nowrap ${vistaActual === key ? 'tab-active' : 'text-gray-400'}">
+                    ${datos[key].label}
+                </button>
+            `;
+        });
+        document.getElementById('label-categoria-actual').innerText = datos[vistaActual].label;
+    }
+
+    function cambiarVista(vista) {
+        vistaActual = vista;
+        cancelarEdicion();
+        inicializarTabs();
+        actualizarUI();
+    }
+
+    document.getElementById('mov-remito-file').addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if (file && file.type === "application/pdf") {
+            const reader = new FileReader();
+            reader.onload = function(event) { remitoDataTemp = event.target.result; };
+            reader.readAsDataURL(file);
+        }
+    });
+
+    function cargarPrecioSugerido() {
+        const producto = document.getElementById('mov-producto').value;
+        if (producto && datos[vistaActual].inventario[producto]) {
+            document.getElementById('mov-precio').value = datos[vistaActual].inventario[producto].precio || 0;
+        }
+    }
+
+    function agregarAlPedido() {
+        const producto = document.getElementById('mov-producto').value;
+        const tipo = document.getElementById('mov-tipo').value;
+        const cantidad = parseInt(document.getElementById('mov-cantidad').value);
+        const precio = parseFloat(document.getElementById('mov-precio').value) || 0;
+        if(!producto || !cantidad || cantidad < 1) return;
+        pedidoTemporal.push({ producto, tipo, cantidad, precio });
+        document.getElementById('mov-cantidad').value = '';
+        renderizarPedidoTemporal();
+    }
+
+    function quitarDelPedido(index) {
+        pedidoTemporal.splice(index, 1);
+        renderizarPedidoTemporal();
+    }
+
+    function renderizarPedidoTemporal() {
+        const contenedor = document.getElementById('lista-temporal');
+        const btn = document.getElementById('btn-confirmar');
+        const totalDisp = document.getElementById('total-pedido-dinamico');
+        contenedor.innerHTML = '';
+        let total = 0;
+        pedidoTemporal.forEach((item, index) => {
+            const subtotal = item.cantidad * item.precio;
+            total += subtotal;
+            contenedor.innerHTML += `
+                <div class="flex justify-between items-center bg-gray-50 p-2 rounded border border-gray-100 text-[10px]">
+                    <div class="flex-1">
+                        <span class="font-black text-lanus">${item.cantidad}</span> ${item.producto}
+                        <span class="ml-1 font-bold ${item.tipo === 'SALIDA' ? 'text-red-500' : 'text-green-600'} text-[8px]">[${item.tipo}]</span>
+                    </div>
+                    <div class="text-right mr-3 font-bold text-gray-600">
+                        $ ${subtotal.toFixed(2)}
+                    </div>
+                    <button onclick="quitarDelPedido(${index})" class="text-gray-300 hover:text-red-500 transition-colors">
+                        <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                    </button>
+                </div>
+            `;
+        });
+        totalDisp.innerText = `$ ${total.toFixed(2)}`;
+        btn.disabled = pedidoTemporal.length === 0;
+    }
+
+    function confirmarPedidoCompleto() {
+        const responsable = document.getElementById('mov-responsable').value.trim();
+        const evento = document.getElementById('mov-evento').value.trim();
+        const fechaMov = document.getElementById('mov-fecha-manual').value;
+        const ambito = document.getElementById('mov-ambito').value;
+        const obs = document.getElementById('mov-obs').value.trim();
+        if(!responsable || !evento || !fechaMov) return;
+        let totalGeneral = pedidoTemporal.reduce((acc, item) => acc + (item.cantidad * item.precio), 0);
+        const pedido = {
+            id: editandoId || Date.now(),
+            items: [...pedidoTemporal],
+            fechaMov, ambito, evento, responsable,
+            observaciones: obs, remitoPdf: remitoDataTemp, totalGeneral,
+            registroFecha: new Date().toLocaleDateString('es-AR'),
+            registroHora: new Date().toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit' })
+        };
+        if(editandoId) {
+            const index = datos[vistaActual].movimientos.findIndex(m => m.id === editandoId);
+            datos[vistaActual].movimientos[index] = pedido;
+        } else { datos[vistaActual].movimientos.unshift(pedido); }
+        guardar(); cancelarEdicion(); actualizarUI();
+    }
+
+    function cancelarEdicion() {
+        pedidoTemporal = []; editandoId = null; remitoDataTemp = null;
+        document.getElementById('mov-responsable').value = '';
+        document.getElementById('mov-evento').value = '';
+        document.getElementById('mov-obs').value = '';
+        document.getElementById('mov-remito-file').value = '';
+        document.getElementById('remito-existente').classList.add('hidden');
+        document.getElementById('titulo-form').innerText = "Registrar Movimiento";
+        renderizarPedidoTemporal();
+    }
+
+    function editarPedido(id) {
+        const p = datos[vistaActual].movimientos.find(m => m.id === id);
+        if(!p) return;
+        editandoId = id;
+        document.getElementById('titulo-form').innerText = "Editando Registro";
+        document.getElementById('mov-responsable').value = p.responsable;
+        document.getElementById('mov-evento').value = p.evento;
+        document.getElementById('mov-fecha-manual').value = p.fechaMov;
+        document.getElementById('mov-ambito').value = p.ambito;
+        document.getElementById('mov-obs').value = p.observaciones;
+        if (p.remitoPdf) { document.getElementById('remito-existente').classList.remove('hidden'); remitoDataTemp = p.remitoPdf; }
+        else { document.getElementById('remito-existente').classList.add('hidden'); remitoDataTemp = null; }
+        pedidoTemporal = [...p.items]; renderizarPedidoTemporal();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    function eliminarPedido(id) {
+        if(confirm("¿Eliminar este registro?")) {
+            datos[vistaActual].movimientos = datos[vistaActual].movimientos.filter(m => m.id !== id);
+            guardar(); actualizarUI();
+        }
+    }
+
+    function abrirPdf(data) {
+        const win = window.open();
+        win.document.write('<iframe src="' + data + '" frameborder="0" style="border:0; width:100%; height:100%;" allowfullscreen></iframe>');
+    }
+
+    function actualizarUI() {
+        const inv = datos[vistaActual].inventario;
+        const movs = datos[vistaActual].movimientos;
+        const contenedorStock = document.getElementById('contenedor-stock-base');
+        contenedorStock.innerHTML = '';
+        Object.keys(inv).forEach(item => {
+            const base = inv[item].cant;
+            const precioBase = inv[item].precio || 0;
+            let real = base;
+            movs.forEach(pedido => {
+                pedido.items.filter(i => i.producto === item).forEach(i => {
+                    if(i.tipo === 'SALIDA') real -= i.cantidad;
+                    else real += i.cantidad;
+                });
+            });
+            contenedorStock.innerHTML += `
+                <div class="p-3 bg-white rounded-xl border border-gray-100 group shadow-sm transition-all">
+                    <div class="flex justify-between items-start mb-2 text-[10px] font-black text-lanus uppercase">
+                        <span>${item}</span>
+                        <button onclick="eliminarItemStock('${item}')" class="text-gray-200 hover:text-red-500 opacity-0 group-hover:opacity-100"><svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2"></path></svg></button>
+                    </div>
+                    <div class="grid grid-cols-2 gap-4 items-end">
+                        <div class="flex items-center gap-1">
+                            <input type="number" value="${base}" onchange="editarBase('${item}', this.value)" class="w-10 bg-gray-50 p-1 rounded font-black text-xs text-center outline-none">
+                            <span class="text-gray-300 font-bold">/</span>
+                            <input type="number" value="${precioBase}" onchange="editarPrecioUnitario('${item}', this.value)" class="w-16 bg-gray-50 p-1 rounded font-black text-xs text-center outline-none">
+                        </div>
+                        <div class="text-right">
+                            <div class="text-lg font-black ${real < 5 ? 'text-red-600' : 'text-gray-700'}">${real}</div>
+                            <div class="text-[8px] text-gray-400 uppercase font-black">Disp. Real</div>
+                        </div>
+                    </div>
+                </div>
+            `;
+        });
+        document.getElementById('mov-producto').innerHTML = Object.keys(inv).map(i => `<option value="${i}">${i}</option>`).join('');
+        cargarPrecioSugerido();
+        const tablaBody = document.getElementById('lista-movimientos');
+        tablaBody.innerHTML = '';
+        movs.forEach(m => {
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td class="p-4 text-gray-500 font-bold text-[10px] leading-tight">${m.fechaMov}<br><span class="font-normal opacity-50 text-[8px]">${m.registroHora}</span></td>
+                <td class="p-4"><div class="font-bold text-lanus uppercase text-[10px]">${m.responsable}</div><div class="text-[9px] text-gray-400 italic uppercase">${m.evento}</div></td>
+                <td class="p-4"><div class="text-[9px] text-gray-600 font-medium leading-relaxed">${m.items.map(i => `• <span class="font-black text-gray-800">${i.cantidad}</span> ${i.producto}`).join('<br>')}</div></td>
+                <td class="p-4 text-center font-black text-gray-700">$ ${m.totalGeneral.toFixed(2)}</td>
+                <td class="p-4 text-center">${m.remitoPdf ? `<button onclick="abrirPdf('${m.remitoPdf}')" class="text-lanus hover:scale-125 transition-transform"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" stroke-width="2"></path></svg></button>` : '---'}</td>
+                <td class="p-4 text-center"><div class="flex justify-center gap-3"><button onclick="editarPedido(${m.id})" class="text-gray-300 hover:text-blue-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" stroke-width="2"></path></svg></button><button onclick="eliminarPedido(${m.id})" class="text-gray-300 hover:text-red-500"><svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" stroke-width="2"></path></svg></button></div></td>
+            `;
+            tablaBody.appendChild(tr);
+        });
+    }
+
+    function editarBase(item, valor) { const n = parseInt(valor); if(!isNaN(n) && n >= 0) { datos[vistaActual].inventario[item].cant = n; guardar(); actualizarUI(); } }
+    function editarPrecioUnitario(item, valor) { const p = parseFloat(valor); if(!isNaN(p) && p >= 0) { datos[vistaActual].inventario[item].precio = p; guardar(); actualizarUI(); } }
+    function eliminarItemStock(item) { if(confirm(`¿Eliminar ${item}?`)) { delete datos[vistaActual].inventario[item]; guardar(); actualizarUI(); } }
+    function abrirModalProducto() { document.getElementById('modal-nuevo').style.display = 'flex'; }
+    function cerrarModalProducto() { document.getElementById('modal-nuevo').style.display = 'none'; }
+    function guardarNuevoProducto() {
+        const nombre = document.getElementById('nuevo-nombre').value.trim();
+        const stock = parseInt(document.getElementById('nuevo-stock').value) || 0;
+        const precio = parseFloat(document.getElementById('nuevo-precio').value) || 0;
+        if(nombre) { datos[vistaActual].inventario[nombre] = { cant: stock, precio: precio }; guardar(); cerrarModalProducto(); actualizarUI(); }
+    }
+    function abrirModalCategoria() { document.getElementById('modal-categoria').style.display = 'flex'; }
+    function cerrarModalCategoria() { document.getElementById('modal-categoria').style.display = 'none'; }
+    function guardarNuevaCategoria() {
+        const nombre = document.getElementById('nueva-cat-nombre').value.trim();
+        if(nombre) {
+            const key = nombre.toLowerCase().replace(/\s+/g, '_');
+            if(!datos[key]) { datos[key] = { label: nombre, inventario: {}, movimientos: [] }; guardar(); cambiarVista(key); }
+            cerrarModalCategoria();
+        }
+    }
+    function descargarExcelActual() {
+        const movs = datos[vistaActual].movimientos;
+        if(movs.length === 0) return;
+        let csv = "\uFEFFFecha;Responsable;Evento;Ámbito;Artículos;Total $\n";
+        movs.forEach(m => {
+            const arts = m.items.map(i => `${i.cantidad} ${i.producto} ($${i.precio})`).join(" | ");
+            csv += `"${m.fechaMov}";"${m.responsable}";"${m.evento}";"${m.ambito}";"${arts}";${m.totalGeneral.toFixed(2)}\n`;
+        });
+        const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = `Reporte_${datos[vistaActual].label}.csv`;
+        link.click();
+    }
+    function establecerFechaHoy() { document.getElementById('mov-fecha-manual').value = new Date().toISOString().split('T')[0]; }
+    function actualizarReloj() {
+        const ahora = new Date();
+        document.getElementById('reloj').innerHTML = `${ahora.toLocaleDateString('es-AR', { weekday: 'long' }).toUpperCase()}<br>${ahora.toLocaleDateString('es-AR')} | ${ahora.toLocaleTimeString('es-AR', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}`;
+    }
+    window.onload = function() { cargar(); setInterval(actualizarReloj, 1000); establecerFechaHoy(); inicializarTabs(); actualizarReloj(); actualizarUI(); };
+</script>
+</body>
+</html>
