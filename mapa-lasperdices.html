@@ -1,0 +1,494 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Cómo llegar - Las Perdices 1</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --granate: #7b1228;
+    --granate-dark: #4e0b19;
+    --granate-light: #a31a38;
+    --granate-pale: #f5e6e9;
+    --white: #ffffff;
+    --off-white: #faf7f7;
+    --border: #e8d5d9;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--off-white);
+    font-family: 'DM Sans', sans-serif;
+    color: var(--granate-dark);
+    min-height: 100vh;
+  }
+
+  .header {
+    background: var(--granate-dark);
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 3px solid var(--granate-light);
+  }
+
+  .header h1 {
+    font-family: 'Playfair Display', serif;
+    color: var(--white);
+    font-size: 18px;
+    letter-spacing: 1px;
+  }
+
+  .header p {
+    color: rgba(255,255,255,0.5);
+    font-size: 10px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+
+  .header-badge {
+    background: var(--granate-light);
+    color: white;
+    font-size: 10px;
+    padding: 5px 12px;
+    border-radius: 20px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    font-weight: 600;
+  }
+
+  .hero {
+    background: var(--granate);
+    padding: 30px 24px 26px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero::before {
+    content: '🌿';
+    position: absolute;
+    right: 10px; top: 10px;
+    font-size: 90px;
+    opacity: 0.1;
+  }
+
+  .hero-label {
+    color: rgba(255,255,255,0.55);
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+
+  .hero h2 {
+    font-family: 'Playfair Display', serif;
+    color: white;
+    font-size: 26px;
+    line-height: 1.2;
+    margin-bottom: 5px;
+  }
+
+  .hero-sub {
+    color: rgba(255,255,255,0.6);
+    font-size: 12px;
+    margin-bottom: 20px;
+  }
+
+  .hero-route { display: flex; align-items: center; gap: 10px; }
+
+  .route-pill {
+    background: rgba(255,255,255,0.13);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 20px;
+    padding: 7px 14px;
+    color: white;
+    font-size: 12px;
+    display: flex; align-items: center; gap: 6px;
+  }
+
+  .route-arrow { color: rgba(255,255,255,0.45); font-size: 16px; }
+
+  .quick-info {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    background: var(--white);
+    border-bottom: 2px solid var(--border);
+  }
+
+  .info-box {
+    padding: 16px 10px;
+    text-align: center;
+    border-right: 1px solid var(--border);
+  }
+
+  .info-box:last-child { border-right: none; }
+  .info-icon { font-size: 20px; margin-bottom: 3px; }
+
+  .info-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    color: var(--granate);
+    font-weight: 700;
+  }
+
+  .info-label {
+    font-size: 10px;
+    color: #aaa;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .map-section { padding: 22px 20px 14px; }
+
+  .section-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--granate-dark);
+    margin-bottom: 14px;
+    display: flex; align-items: center; gap: 8px;
+  }
+
+  .section-title::after {
+    content: ''; flex: 1; height: 1px; background: var(--border);
+  }
+
+  .map-container {
+    background: #f5eced;
+    border-radius: 14px;
+    overflow: hidden;
+    border: 2px solid var(--granate-light);
+  }
+
+  .map-svg { width: 100%; height: 310px; }
+
+  .map-legend {
+    display: flex; gap: 16px;
+    padding: 10px 14px;
+    background: white;
+    border-top: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+
+  .legend-item { display: flex; align-items: center; gap: 6px; font-size: 11px; color: #777; }
+  .legend-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+  .steps-section { padding: 6px 20px 22px; }
+
+  .step {
+    display: flex; gap: 14px;
+    padding: 15px 0;
+    border-bottom: 1px solid var(--border);
+    animation: fadeUp 0.4s ease both;
+  }
+
+  .step:last-child { border-bottom: none; }
+
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .step:nth-child(1) { animation-delay: 0.05s; }
+  .step:nth-child(2) { animation-delay: 0.10s; }
+  .step:nth-child(3) { animation-delay: 0.15s; }
+  .step:nth-child(4) { animation-delay: 0.20s; }
+  .step:nth-child(5) { animation-delay: 0.25s; }
+
+  .step-num {
+    flex-shrink: 0;
+    width: 32px; height: 32px;
+    background: var(--granate);
+    color: white;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700; font-size: 13px;
+    font-family: 'Playfair Display', serif;
+    box-shadow: 0 2px 8px rgba(123,18,40,0.25);
+  }
+
+  .step-num.final { background: var(--granate-dark); font-size: 15px; }
+
+  .step-content h3 { font-size: 14px; font-weight: 600; color: var(--granate-dark); margin-bottom: 3px; }
+  .step-content p  { font-size: 12px; color: #777; line-height: 1.5; }
+
+  .step-tag {
+    display: inline-block;
+    background: var(--granate-pale);
+    color: var(--granate);
+    font-size: 10px;
+    padding: 2px 8px;
+    border-radius: 10px;
+    margin-top: 5px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .dest-card {
+    margin: 0 20px 22px;
+    background: var(--granate-dark);
+    border-radius: 14px;
+    padding: 20px;
+    color: white;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .dest-card::before {
+    content: '📍';
+    position: absolute; right: 14px; top: 50%;
+    transform: translateY(-50%);
+    font-size: 44px; opacity: 0.12;
+  }
+
+  .dest-card h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 17px; margin-bottom: 6px; color: white;
+  }
+
+  .dest-card p { font-size: 12px; color: rgba(255,255,255,0.65); line-height: 1.6; }
+
+  .dest-card .coords {
+    margin-top: 10px;
+    background: rgba(255,255,255,0.09);
+    border-radius: 8px; padding: 7px 12px;
+    font-size: 10px; color: rgba(255,255,255,0.5);
+    font-family: monospace;
+  }
+
+  .cta-section {
+    padding: 0 20px 28px;
+    display: flex; flex-direction: column; gap: 11px;
+  }
+
+  .btn-primary {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: var(--granate);
+    color: white;
+    padding: 15px; border-radius: 12px;
+    text-decoration: none; font-weight: 600; font-size: 15px;
+    box-shadow: 0 4px 16px rgba(123,18,40,0.3);
+    transition: all 0.2s;
+  }
+
+  .btn-primary:hover { background: var(--granate-dark); transform: translateY(-1px); }
+
+  .btn-secondary {
+    display: flex; align-items: center; justify-content: center; gap: 10px;
+    background: white; color: var(--granate);
+    padding: 14px; border-radius: 12px;
+    text-decoration: none; font-weight: 600; font-size: 14px;
+    border: 2px solid var(--granate);
+    transition: all 0.2s;
+  }
+
+  .btn-secondary:hover { background: var(--granate-pale); }
+
+  .footer {
+    background: var(--granate-dark);
+    padding: 16px 20px;
+    text-align: center;
+    border-top: 3px solid var(--granate-light);
+  }
+
+  .footer p { color: rgba(255,255,255,0.45); font-size: 11px; letter-spacing: 0.5px; }
+  .footer strong { color: rgba(255,255,255,0.85); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <h1>Las Perdices 1</h1>
+    <p>Urbanización Protegida · Guernica</p>
+  </div>
+  <span class="header-badge">Cómo llegar</span>
+</div>
+
+<div class="hero">
+  <div class="hero-label">Ruta hacia el destino</div>
+  <h2>Las Perdices 1<br>Urbanización Protegida</h2>
+  <p class="hero-sub">Corredor Verde de Canning · Guernica, Pcia. de Buenos Aires</p>
+  <div class="hero-route">
+    <span class="route-pill">🏙 Buenos Aires</span>
+    <span class="route-arrow">→</span>
+    <span class="route-pill">🌿 Las Perdices 1</span>
+  </div>
+</div>
+
+<div class="quick-info">
+  <div class="info-box">
+    <div class="info-icon">🕐</div>
+    <div class="info-value">~50'</div>
+    <div class="info-label">Duración</div>
+  </div>
+  <div class="info-box">
+    <div class="info-icon">🛣</div>
+    <div class="info-value">~62 km</div>
+    <div class="info-label">Distancia</div>
+  </div>
+  <div class="info-box">
+    <div class="info-icon">🚗</div>
+    <div class="info-value">Auto</div>
+    <div class="info-label">Transporte</div>
+  </div>
+</div>
+
+<div class="map-section">
+  <div class="section-title">Mapa de recorrido</div>
+  <div class="map-container">
+    <svg class="map-svg" viewBox="0 0 400 310" xmlns="http://www.w3.org/2000/svg">
+      <rect width="400" height="310" fill="#f5eced"/>
+
+      <ellipse cx="195" cy="195" rx="115" ry="75" fill="#e8d8da" opacity="0.5"/>
+      <ellipse cx="75"  cy="255" rx="55"  ry="38" fill="#e8d8da" opacity="0.35"/>
+      <ellipse cx="330" cy="265" rx="48"  ry="28" fill="#e8d8da" opacity="0.35"/>
+
+      <rect x="28" y="98" width="50" height="32" rx="5" fill="#dfc8cc" opacity="0.7"/>
+      <text x="53" y="110" text-anchor="middle" font-size="8" fill="#7b1228" font-family="sans-serif" font-weight="bold">✈</text>
+      <text x="53" y="122" text-anchor="middle" font-size="7" fill="#7b1228" font-family="sans-serif">Ezeiza</text>
+
+      <path d="M0,118 Q100,113 200,118 Q300,123 400,116" stroke="#c9a0a8" stroke-width="7" fill="none" opacity="0.45"/>
+      <path d="M0,118 Q100,113 200,118 Q300,123 400,116" stroke="white" stroke-width="2" fill="none" stroke-dasharray="10,5" opacity="0.55"/>
+      <path d="M98,0 Q96,80 93,158 Q90,218 88,310"  stroke="#c9a0a8" stroke-width="7" fill="none" opacity="0.45"/>
+      <path d="M213,0 Q211,80 208,158 Q205,228 203,310" stroke="#c9a0a8" stroke-width="5" fill="none" opacity="0.45"/>
+      <path d="M0,198 Q100,193 200,196 Q300,198 400,196" stroke="#c9a0a8" stroke-width="5" fill="none" opacity="0.35"/>
+
+      <path d="M338,58 Q328,78 313,98 Q298,118 283,138 Q258,163 233,183 Q213,198 203,213"
+            stroke="#4e0b19" stroke-width="6" fill="none" stroke-linecap="round" opacity="0.2"/>
+      <path d="M338,58 Q328,78 313,98 Q298,118 283,138 Q258,163 233,183 Q213,198 203,213"
+            stroke="#7b1228" stroke-width="4" fill="none" stroke-linecap="round"/>
+
+      <circle r="5" fill="white" stroke="#7b1228" stroke-width="2">
+        <animateMotion dur="3s" repeatCount="indefinite"
+          path="M338,58 Q328,78 313,98 Q298,118 283,138 Q258,163 233,183 Q213,198 203,213"/>
+      </circle>
+
+      <rect x="80" y="70" width="28" height="13" rx="3" fill="#7b1228"/>
+      <text x="94" y="80" text-anchor="middle" font-size="7.5" fill="white" font-family="sans-serif" font-weight="bold">Ruta 6</text>
+
+      <rect x="210" y="242" width="30" height="13" rx="3" fill="#7b1228"/>
+      <text x="225" y="252" text-anchor="middle" font-size="7.5" fill="white" font-family="sans-serif" font-weight="bold">Ruta 16</text>
+
+      <circle cx="113" cy="146" r="3.5" fill="#7b1228" opacity="0.55"/>
+      <text x="120" y="150" font-size="8" fill="#4e0b19" font-family="sans-serif">Canning</text>
+
+      <circle cx="198" cy="116" r="3.5" fill="#7b1228" opacity="0.55"/>
+      <text x="205" y="120" font-size="8" fill="#4e0b19" font-family="sans-serif">Monte Grande</text>
+
+      <circle cx="278" cy="188" r="3.5" fill="#7b1228" opacity="0.55"/>
+      <text x="285" y="192" font-size="8" fill="#4e0b19" font-family="sans-serif">Guernica</text>
+
+      <circle cx="228" cy="253" r="3.5" fill="#7b1228" opacity="0.55"/>
+      <text x="236" y="257" font-size="8" fill="#4e0b19" font-family="sans-serif">San Vicente</text>
+
+      <circle cx="308" cy="143" r="3.5" fill="#7b1228" opacity="0.45"/>
+      <text x="315" y="147" font-size="8" fill="#4e0b19" font-family="sans-serif">Longchamps</text>
+
+      <!-- ORIGEN -->
+      <circle cx="338" cy="58" r="12" fill="#7b1228" stroke="white" stroke-width="2.5"/>
+      <text x="338" y="63" text-anchor="middle" font-size="11" fill="white" font-family="sans-serif">🏙</text>
+      <rect x="310" y="38" width="56" height="14" rx="4" fill="#4e0b19" opacity="0.92"/>
+      <text x="338" y="49" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif" font-weight="bold">Origen</text>
+
+      <!-- DESTINO -->
+      <path d="M203,236 L195,220 L211,220 Z" fill="#7b1228"/>
+      <circle cx="203" cy="236" r="7" fill="#7b1228" stroke="white" stroke-width="2"/>
+      <text x="203" y="239" text-anchor="middle" font-size="7" fill="white" font-family="sans-serif" font-weight="bold">★</text>
+      <rect x="153" y="243" width="100" height="24" rx="5" fill="#4e0b19" opacity="0.93"/>
+      <text x="203" y="254" text-anchor="middle" font-size="8" fill="white" font-family="sans-serif" font-weight="bold">LAS PERDICES 1</text>
+      <text x="203" y="263" text-anchor="middle" font-size="7" fill="rgba(255,255,255,0.6)" font-family="sans-serif">Urb. Protegida · Guernica</text>
+
+      <line x1="18" y1="298" x2="68" y2="298" stroke="#7b1228" stroke-width="1.5"/>
+      <line x1="18" y1="294" x2="18" y2="302" stroke="#7b1228" stroke-width="1.5"/>
+      <line x1="68" y1="294" x2="68" y2="302" stroke="#7b1228" stroke-width="1.5"/>
+      <text x="43" y="308" text-anchor="middle" font-size="7" fill="#7b1228" font-family="sans-serif">≈ 20 km</text>
+
+      <text x="375" y="28" text-anchor="middle" font-size="12" fill="#7b1228" font-family="sans-serif" font-weight="bold">N</text>
+      <text x="375" y="40" text-anchor="middle" font-size="11" fill="#7b1228" font-family="sans-serif">↑</text>
+    </svg>
+
+    <div class="map-legend">
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#7b1228"></div>
+        Ruta recomendada
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#4e0b19"></div>
+        Origen
+      </div>
+      <div class="legend-item">
+        <div class="legend-dot" style="background:#7b1228; border:2px solid white; box-shadow:0 0 0 1px #7b1228"></div>
+        Destino (Las Perdices)
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="steps-section">
+  <div class="section-title">Indicaciones paso a paso</div>
+
+  <div class="step">
+    <div class="step-num">1</div>
+    <div class="step-content">
+      <h3>Tomar Autopista Richieri (Ruta A-001)</h3>
+      <p>Desde Buenos Aires, incorporarse a la Autopista Richieri dirección Ezeiza / Canning, hacia el suroeste.</p>
+      <span class="step-tag">~20 km</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">2</div>
+    <div class="step-content">
+      <h3>Bifurcación: tomar Ruta Prov. 6</h3>
+      <p>En el cruce de Ezeiza, seguir por Ruta 6 hacia el sur hasta la altura de Guernica.</p>
+      <span class="step-tag">~25 km</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num">3</div>
+    <div class="step-content">
+      <h3>Desvío por Ruta Prov. 16</h3>
+      <p>En la intersección Ruta 6 con Ruta 16, girar hacia San Vicente. Recorrer aprox. 5 km.</p>
+      <span class="step-tag">~5 km</span>
+    </div>
+  </div>
+
+  <div class="step">
+    <div class="step-num final">★</div>
+    <div class="step-content">
+      <h3>Llegada: Las Perdices 1</h3>
+      <p>Leopoldo Marechal 850, entre San Vicente y Guernica. Ingresar por el acceso de la urbanización protegida.</p>
+      <span class="step-tag">🌿 Destino</span>
+    </div>
+  </div>
+</div>
+
+<div class="dest-card">
+  <h3>Las Perdices 1</h3>
+  <p>Urbanización Protegida · Corredor Verde de Canning<br>
+     Leopoldo Marechal 850, entre San Vicente y Guernica<br>
+     Provincia de Buenos Aires</p>
+  <div class="coords">📍 -34.832° S &nbsp;·&nbsp; -58.513° O &nbsp;·&nbsp; Partido de San Vicente</div>
+</div>
+
+<div class="cta-section">
+  <a class="btn-primary" href="https://maps.app.goo.gl/sBpxGJquXpUUneLX9" target="_blank">
+    📍 Abrir en Google Maps
+  </a>
+  <a class="btn-secondary" href="https://wa.me/541568004900?text=Hola%20Paola%2C%20tengo%20una%20consulta%20sobre%20Las%20Perdices%201" target="_blank">
+    💬 Consultas con Paola — WhatsApp
+  </a>
+</div>
+
+<div class="footer">
+  <p>Consultas: <strong>Paola 15-6800-4900</strong></p>
+</div>
+
+</body>
+</html>
